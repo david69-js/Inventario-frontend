@@ -15,8 +15,8 @@ html {
 
 body {
   color-scheme: light;
-  background-color: #ffffff;
-  color: #171717;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
   line-height: 1.5;
@@ -26,20 +26,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Vercel-style Material Overrides ── */
+/* ══════════════════════════════════════════════
+   Figma (Indigo/Slate) Material Overrides
+   ══════════════════════════════════════════════ */
 
-/* Cards: white bg, subtle border, no heavy shadow */
+/* Cards */
 .mat-mdc-card {
   --mdc-elevated-card-container-color: var(--bg-card);
   --mdc-elevated-card-container-elevation: 0;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: var(--shadow-sm) !important;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .mat-mdc-card:hover {
   box-shadow: var(--shadow-md) !important;
-  border-color: var(--border-light);
+  border-color: var(--border-light) !important;
 }
 
 /* Buttons */
@@ -48,13 +50,15 @@ body {
   --mdc-filled-button-label-text-color: #ffffff;
   --mdc-text-button-label-text-color: var(--text-secondary);
   --mdc-outlined-button-label-text-color: var(--text-primary);
-  --mdc-outlined-button-outline-color: var(--border);
+  --mdc-outlined-button-outline-color: var(--text-primary);
+  letter-spacing: -0.01em !important;
 }
   
 .mat-mdc-raised-button {
-  box-shadow: none !important;
+  box-shadow: var(--shadow-sm) !important;
   border-radius: var(--radius-md) !important;
   font-weight: 500 !important;
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
 }
 .mat-mdc-raised-button:hover {
   background-color: var(--accent-hover) !important;
@@ -62,28 +66,71 @@ body {
 .mat-mdc-outlined-button {
   border-radius: var(--radius-md) !important;
   font-weight: 500 !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+}
+.mat-mdc-outlined-button:hover {
+  background-color: var(--bg-hover) !important;
+  border-color: var(--text-secondary) !important;
 }
 
-/* Inputs & Form Fields */
+/* Icon buttons */
+.mat-mdc-icon-button {
+  color: var(--text-muted) !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+.mat-mdc-icon-button:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-hover) !important;
+}
+
+/* Inputs & Form Fields (Modern Flat Appearance) */
 .mat-mdc-form-field {
-  --mdc-filled-text-field-container-color: var(--bg-body);
-  --mdc-filled-text-field-active-indicator-color: transparent;
-  --mdc-filled-text-field-hover-active-indicator-color: transparent;
-  --mdc-filled-text-field-focus-active-indicator-color: transparent;
-}
+  --mdc-outlined-text-field-outline-color: var(--border);
+  --mdc-outlined-text-field-hover-outline-color: var(--text-muted);
+  --mdc-outlined-text-field-focus-outline-color: var(--text-primary);
   
-.mat-mdc-form-field-flex {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md) !important;
+  --mdc-outlined-text-field-label-text-color: var(--text-primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--text-primary);
+  --mdc-outlined-text-field-input-text-color: var(--text-primary);
+  --mdc-outlined-text-field-caret-color: var(--text-primary);
+  
+  --mdc-outlined-text-field-container-shape: 10px; /* More rounded like Figma */
+  
+  font-family: 'Inter', sans-serif !important;
+  margin-top: 16px; /* Space for outside label */
+}
+
+/* Input Outline Transitions & Notch Removal */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-top-width: 1px !important;
+  border-bottom-width: 1px !important;
+  transition: border-color 0.2s ease, border-width 0.2s ease !important;
+}
+
+.mat-focused .mdc-notched-outline__leading,
+.mat-focused .mdc-notched-outline__notch,
+.mat-focused .mdc-notched-outline__trailing {
+  border-width: 2px !important;
+  border-color: var(--text-primary) !important;
+}
+
+/* Force label to render completely outside the input box */
+.mdc-floating-label {
+  transform: translateY(-28px) translateX(-4px) scale(0.9) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  opacity: 1 !important;
+}
+.mdc-notched-outline__notch {
+  border-right: none !important;
+  border-left: none !important;
+}
+
+/* Form field wrapper padding cleanups */
+.mat-mdc-text-field-wrapper {
   background-color: var(--bg-card) !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.mat-mdc-form-field.mat-focused .mat-mdc-form-field-flex {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-light);
-}
-.mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple::before {
-  border-bottom: none !important;
 }
 
 /* Tables */
@@ -115,126 +162,35 @@ body {
   padding: 0 24px !important;
 }
 
-/* Toolbar: white with subtle bottom border */
+/* Toolbar */
 .mat-toolbar {
-  background: #ffffff !important;
-  color: #171717 !important;
-  border-bottom: 1px solid #eaeaea !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border) !important;
   box-shadow: none !important;
-  min-height: 56px !important;
-}
-
-/* Buttons: Vercel-style */
-.mat-mdc-raised-button.mat-primary,
-.mat-mdc-unelevated-button.mat-primary {
-  --mdc-filled-button-container-color: #171717 !important;
-  --mdc-filled-button-label-text-color: #ffffff !important;
-  border-radius: 6px !important;
-  font-weight: 500 !important;
-  letter-spacing: -0.01em !important;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
-}
-.mat-mdc-raised-button.mat-primary:hover,
-.mat-mdc-unelevated-button.mat-primary:hover {
-  --mdc-filled-button-container-color: #333333 !important;
-}
-
-.mat-mdc-outlined-button,
-.mdc-button--outlined {
-  border-color: #eaeaea !important;
-  color: #171717 !important;
-  border-radius: 6px !important;
-  font-weight: 500 !important;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-.mat-mdc-outlined-button:hover,
-.mdc-button--outlined:hover {
-  background-color: #fafafa !important;
-  border-color: #171717 !important;
-}
-
-/* Form fields: clean Vercel-style inputs */
-.mat-mdc-form-field {
-  --mdc-filled-text-field-container-color: #fafafa;
-  --mdc-filled-text-field-focus-active-indicator-color: #171717;
-  --mdc-filled-text-field-hover-active-indicator-color: #999;
-  --mdc-filled-text-field-active-indicator-color: #eaeaea;
-  --mdc-filled-text-field-label-text-color: #666;
-  --mdc-filled-text-field-focus-label-text-color: #171717;
-  --mdc-filled-text-field-input-text-color: #171717;
-  font-family: 'Inter', sans-serif !important;
-}
-
-/* Chips: neutral Vercel badges */
-.mat-mdc-chip {
-  --mdc-chip-elevated-container-color: #fafafa !important;
-  --mdc-chip-label-text-color: #171717 !important;
-  border: 1px solid #eaeaea !important;
-  border-radius: 20px !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-}
-.mat-mdc-chip.mat-primary {
-  --mdc-chip-elevated-container-color: #f0fdf4 !important;
-  --mdc-chip-label-text-color: #166534 !important;
-  border-color: #bbf7d0 !important;
-}
-.mat-mdc-chip.mat-warn {
-  --mdc-chip-elevated-container-color: #fef2f2 !important;
-  --mdc-chip-label-text-color: #991b1b !important;
-  border-color: #fecaca !important;
-}
-.mat-mdc-chip.mat-accent {
-  --mdc-chip-elevated-container-color: #fffbeb !important;
-  --mdc-chip-label-text-color: #92400e !important;
-  border-color: #fde68a !important;
+  min-height: 64px !important;
 }
 
 /* Dialogs */
 .mat-mdc-dialog-container .mdc-dialog__surface {
-  border-radius: 12px !important;
-  border: 1px solid #eaeaea !important;
-  box-shadow: 0 16px 70px rgba(0, 0, 0, 0.15) !important;
+  border-radius: var(--radius-xl) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
-/* Select dropdowns */
-.mat-mdc-select-panel {
-  border: 1px solid #eaeaea !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Menu panels */
-.mat-mdc-menu-panel {
-  border: 1px solid #eaeaea !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+/* Select dropdowns & Menu panels */
+.mat-mdc-select-panel, .mat-mdc-menu-panel {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 /* List items */
 .mat-mdc-list-item:hover {
-  background-color: #fafafa !important;
+  background-color: var(--bg-hover) !important;
 }
 
 /* Dividers */
 .mat-divider {
-  border-top-color: #eaeaea !important;
-}
-
-/* Badge */
-.mat-badge-content {
-  background: #171717 !important;
-  color: #ffffff !important;
-  font-family: 'Inter', sans-serif !important;
-  font-weight: 600 !important;
-}
-
-/* Icon buttons */
-.mat-mdc-icon-button {
-  color: #666 !important;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.mat-mdc-icon-button:hover {
-  color: #171717 !important;
-  background-color: #f5f5f5 !important;
+  border-top-color: var(--border) !important;
 }
