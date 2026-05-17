@@ -59,7 +59,7 @@ import { MatChipsModule } from '@angular/material/chips';
         <table mat-table [dataSource]="lowStockItems">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Producto</th>
-            <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+            <td mat-cell *matCellDef="let p" style="font-weight:500">{{ p.name }}</td>
           </ng-container>
           <ng-container matColumnDef="sku">
             <th mat-header-cell *matHeaderCellDef>SKU</th>
@@ -79,11 +79,11 @@ import { MatChipsModule } from '@angular/material/chips';
           </ng-container>
           <ng-container matColumnDef="deficit">
             <th mat-header-cell *matHeaderCellDef>Déficit</th>
-            <td mat-cell *matCellDef="let p" style="color: var(--mat-sys-error); font-weight: 500;">-{{ p.deficit }}</td>
+            <td mat-cell *matCellDef="let p" class="deficit-text">-{{ p.deficit }}</td>
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let p"><mat-chip color="warn" highlighted>Stock Bajo</mat-chip></td>
+            <td mat-cell *matCellDef="let p"><span class="badge badge-error">Stock Bajo</span></td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: lowStockColumns;"></tr>
@@ -96,7 +96,7 @@ import { MatChipsModule } from '@angular/material/chips';
       <mat-card-content>
         <div class="summary-grid">
           <div class="summary-item"><span class="summary-value">{{ data?.totalProducts }}</span><span class="summary-label">Total Productos</span></div>
-          <div class="summary-item"><span class="summary-value" style="color: var(--mat-sys-error)">{{ lowStockItems.length }}</span><span class="summary-label">Stock Bajo</span></div>
+          <div class="summary-item warn-item"><span class="summary-value">{{ lowStockItems.length }}</span><span class="summary-label">Stock Bajo</span></div>
           <div class="summary-item"><span class="summary-value">{{ inventoryValue?.totalValue | currency }}</span><span class="summary-label">Valor Total</span></div>
           <div class="summary-item"><span class="summary-value">{{ data?.monthlyMovements }}</span><span class="summary-label">Mov. del Mes</span></div>
         </div>
@@ -104,31 +104,33 @@ import { MatChipsModule } from '@angular/material/chips';
     </mat-card>
   `,
   styles: [`
-    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     mat-card { margin-bottom: 20px; }
     mat-card:last-child { margin-bottom: 0; }
+    mat-card-title { font-size: 14px !important; font-weight: 600 !important; color: #171717 !important; letter-spacing: -0.01em !important; }
     .bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 160px; padding-top: 20px; }
     .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .bars { width: 100%; display: flex; gap: 2px; height: 140px; align-items: flex-end; }
-    .bar-incoming { flex: 1; background: var(--mat-sys-primary); border-radius: 2px 2px 0 0; transition: height 0.3s; min-height: 2px; }
-    .bar-outgoing { flex: 1; background: var(--mat-sys-primary-container); border-radius: 2px 2px 0 0; transition: height 0.3s; min-height: 2px; }
-    .bar-label { font-size: 11px; color: var(--mat-sys-on-surface-variant); }
-    .bar-legend { display: flex; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--mat-sys-on-surface-variant); }
-    .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
-    .legend-dot.incoming { background: var(--mat-sys-primary); }
-    .legend-dot.outgoing { background: var(--mat-sys-primary-container); }
+    .bars { width: 100%; display: flex; gap: 3px; height: 140px; align-items: flex-end; }
+    .bar-incoming { flex: 1; background: #171717; border-radius: 3px 3px 0 0; transition: height 0.4s ease; min-height: 2px; }
+    .bar-outgoing { flex: 1; background: #d4d4d4; border-radius: 3px 3px 0 0; transition: height 0.4s ease; min-height: 2px; }
+    .bar-label { font-size: 11px; color: #999; font-weight: 500; }
+    .bar-legend { display: flex; gap: 16px; margin-top: 14px; font-size: 12px; color: #666; }
+    .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+    .legend-dot.incoming { background: #171717; }
+    .legend-dot.outgoing { background: #d4d4d4; }
     .category-value-list { display: flex; flex-direction: column; gap: 16px; }
-    .category-value-row { }
-    .cv-info { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
-    .cv-value { font-weight: 500; }
-    .cv-bar { height: 8px; background: var(--mat-sys-surface-container-high); border-radius: 4px; overflow: hidden; }
-    .cv-fill { height: 100%; background: var(--mat-sys-primary); border-radius: 4px; transition: width 0.4s; }
-    .warn-text { color: #f59e0b; font-weight: 500; }
+    .cv-info { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; color: #171717; }
+    .cv-value { font-weight: 600; }
+    .cv-bar { height: 6px; background: #f5f5f5; border-radius: 3px; overflow: hidden; }
+    .cv-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s ease; }
+    .warn-text { color: var(--error) !important; font-weight: 600 !important; }
+    .deficit-text { color: var(--error) !important; font-weight: 600 !important; }
     .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .summary-item { text-align: center; padding: 20px; background: var(--mat-sys-surface-container); border-radius: 8px; }
-    .summary-value { display: block; font-size: 28px; font-weight: 500; color: var(--mat-sys-on-surface); }
-    .summary-label { font-size: 12px; color: var(--mat-sys-on-surface-variant); margin-top: 4px; display: block; }
-    code { font-family: 'Roboto Mono', monospace; font-size: 12px; }
+    .summary-item { text-align: center; padding: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; transition: border-color 0.15s ease; }
+    .summary-item:hover { border-color: var(--text-muted); }
+    .warn-item .summary-value { color: var(--error) !important; }
+    .summary-value { display: block; font-size: 28px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em; }
+    .summary-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: block; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
   `]
 })
 export class Reports implements OnInit {

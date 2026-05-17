@@ -51,20 +51,20 @@ import { MatChipsModule } from '@angular/material/chips';
         </ng-container>
         <ng-container matColumnDef="productName">
           <th mat-header-cell *matHeaderCellDef>Producto</th>
-          <td mat-cell *matCellDef="let m">{{ m.productName }}</td>
+          <td mat-cell *matCellDef="let m" style="font-weight:500">{{ m.productName }}</td>
         </ng-container>
         <ng-container matColumnDef="type">
           <th mat-header-cell *matHeaderCellDef>Tipo</th>
           <td mat-cell *matCellDef="let m">
-            <mat-chip [color]="m.type === 'INCOMING' ? 'primary' : m.type === 'OUTGOING' ? 'warn' : 'accent'" highlighted>
+            <span class="badge" [class]="m.type === 'INCOMING' ? 'badge badge-success' : m.type === 'OUTGOING' ? 'badge badge-error' : 'badge badge-warning'">
               {{ m.type === 'INCOMING' ? 'Entrada' : m.type === 'OUTGOING' ? 'Salida' : 'Ajuste' }}
-            </mat-chip>
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef>Cantidad</th>
           <td mat-cell *matCellDef="let m">
-            <span [style.color]="m.type === 'INCOMING' ? 'var(--mat-sys-primary)' : m.type === 'OUTGOING' ? 'var(--mat-sys-error)' : 'var(--mat-sys-tertiary)'" style="font-weight: 500;">
+            <span [class]="m.type === 'INCOMING' ? 'qty-in' : m.type === 'OUTGOING' ? 'qty-out' : 'qty-adj'">
               {{ m.type === 'INCOMING' ? '+' : m.type === 'OUTGOING' ? '-' : '±' }}{{ m.quantity }}
             </span>
           </td>
@@ -75,7 +75,7 @@ import { MatChipsModule } from '@angular/material/chips';
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef>Descripción</th>
-          <td mat-cell *matCellDef="let m">{{ m.description || '—' }}</td>
+          <td mat-cell *matCellDef="let m" class="desc-text">{{ m.description || '—' }}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
         <tr mat-row *matRowDef="let row; columns: columns;"></tr>
@@ -96,19 +96,11 @@ import { MatChipsModule } from '@angular/material/chips';
                 <mat-label>Producto</mat-label>
                 <mat-select [(ngModel)]="formProductId" name="productId" required>
                   <mat-option value="">Seleccionar...</mat-option>
-                  @for (p of products; track p.id) {
-                    <mat-option [value]="p.id">{{ p.name }} ({{ p.sku }})</mat-option>
-                  }
+                  @for (p of products; track p.id) { <mat-option [value]="p.id">{{ p.name }} ({{ p.sku }})</mat-option> }
                 </mat-select>
               </mat-form-field>
-              <mat-form-field>
-                <mat-label>Cantidad</mat-label>
-                <input matInput type="number" [(ngModel)]="formQuantity" name="quantity" required min="1">
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Descripción</mat-label>
-                <input matInput [(ngModel)]="formDescription" name="description">
-              </mat-form-field>
+              <mat-form-field><mat-label>Cantidad</mat-label><input matInput type="number" [(ngModel)]="formQuantity" name="quantity" required min="1"></mat-form-field>
+              <mat-form-field><mat-label>Descripción</mat-label><input matInput [(ngModel)]="formDescription" name="description"></mat-form-field>
               <div class="modal-actions">
                 <button mat-button type="button" (click)="showForm = false">Cancelar</button>
                 <button mat-raised-button color="primary" type="submit">Registrar</button>
@@ -121,10 +113,10 @@ import { MatChipsModule } from '@angular/material/chips';
   `,
   styles: [`
     .action-buttons { display: flex; gap: 8px; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
-    .modal-card { width: 100%; max-width: 440px; }
-    .modal-form { display: flex; flex-direction: column; gap: 4px; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .qty-in { color: var(--success); font-weight: 600; }
+    .qty-out { color: var(--error); font-weight: 600; }
+    .qty-adj { color: var(--warning); font-weight: 600; }
+    .desc-text { color: var(--text-muted); }
   `]
 })
 export class Inventory implements OnInit {
@@ -140,11 +132,7 @@ export class Inventory implements OnInit {
   formDescription = '';
   columns = ['createdAt', 'productName', 'type', 'quantity', 'userName', 'description'];
 
-  constructor(
-    private inventoryService: InventoryService,
-    private productService: ProductService,
-    private auth: AuthService
-  ) {}
+  constructor(private inventoryService: InventoryService, private productService: ProductService, private auth: AuthService) {}
 
   ngOnInit() {
     this.inventoryService.getAll().subscribe((m: InventoryMovement[]) => { this.movements = m; this.applyFilters(); });
@@ -152,24 +140,17 @@ export class Inventory implements OnInit {
   }
 
   applyFilters() {
-    this.filteredMovements = this.filterType
-      ? this.movements.filter(m => m.type === this.filterType)
-      : [...this.movements];
+    this.filteredMovements = this.filterType ? this.movements.filter(m => m.type === this.filterType) : [...this.movements];
   }
 
   openForm(type: MovementType) {
-    this.formType = type;
-    this.formProductId = '';
-    this.formQuantity = 1;
-    this.formDescription = '';
-    this.showForm = true;
+    this.formType = type; this.formProductId = ''; this.formQuantity = 1; this.formDescription = ''; this.showForm = true;
   }
 
   register() {
     const qty = this.formType === MovementType.OUTGOING ? -this.formQuantity : this.formQuantity;
     this.inventoryService.register(this.formType, this.formProductId, qty, this.formDescription, this.auth.currentUser?.id).subscribe(() => {
-      this.showForm = false;
-      this.ngOnInit();
+      this.showForm = false; this.ngOnInit();
     });
   }
 }

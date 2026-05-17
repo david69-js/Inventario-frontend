@@ -22,14 +22,8 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-card-header><mat-card-title>Perfil</mat-card-title></mat-card-header>
         <mat-card-content>
           <form (ngSubmit)="updateProfile()" class="settings-form">
-            <mat-form-field>
-              <mat-label>Nombre</mat-label>
-              <input matInput [(ngModel)]="form.name" name="name">
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Email</mat-label>
-              <input matInput type="email" [(ngModel)]="form.email" name="email">
-            </mat-form-field>
+            <mat-form-field><mat-label>Nombre</mat-label><input matInput [(ngModel)]="form.name" name="name"></mat-form-field>
+            <mat-form-field><mat-label>Email</mat-label><input matInput type="email" [(ngModel)]="form.email" name="email"></mat-form-field>
             <button mat-raised-button color="primary" type="submit">Guardar Cambios</button>
           </form>
         </mat-card-content>
@@ -39,14 +33,8 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-card-header><mat-card-title>Cambiar Contraseña</mat-card-title></mat-card-header>
         <mat-card-content>
           <form (ngSubmit)="changePassword()" class="settings-form">
-            <mat-form-field>
-              <mat-label>Nueva Contraseña</mat-label>
-              <input matInput type="password" [(ngModel)]="passwordForm.newPassword" name="newPassword">
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Confirmar Contraseña</mat-label>
-              <input matInput type="password" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword">
-            </mat-form-field>
+            <mat-form-field><mat-label>Nueva Contraseña</mat-label><input matInput type="password" [(ngModel)]="passwordForm.newPassword" name="newPassword"></mat-form-field>
+            <mat-form-field><mat-label>Confirmar Contraseña</mat-label><input matInput type="password" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword"></mat-form-field>
             <button mat-raised-button color="primary" type="submit">Actualizar Contraseña</button>
           </form>
         </mat-card-content>
@@ -56,20 +44,29 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-card-header><mat-card-title>Información de la Cuenta</mat-card-title></mat-card-header>
         <mat-card-content>
           <div class="info-rows">
-            <div class="info-row"><span class="info-label">Rol:</span><span>{{ auth.currentUser?.role }}</span></div>
-            <div class="info-row"><span class="info-label">Miembro desde:</span><span>{{ auth.currentUser?.createdAt | date:'longDate' }}</span></div>
+            <div class="info-row">
+              <span class="info-label">Rol</span>
+              <span class="info-value badge badge-dark">{{ auth.currentUser?.role }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Miembro desde</span>
+              <span class="info-value">{{ auth.currentUser?.createdAt | date:'longDate' }}</span>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
   `,
   styles: [`
-    .settings-grid { display: flex; flex-direction: column; gap: 20px; max-width: 560px; }
+    .settings-grid { display: flex; flex-direction: column; gap: 16px; max-width: 560px; }
     .settings-form { display: flex; flex-direction: column; gap: 4px; }
     .settings-form button { align-self: flex-start; margin-top: 8px; }
-    .info-rows { display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
-    .info-row { display: flex; gap: 8px; }
-    .info-label { color: var(--mat-sys-on-surface-variant); min-width: 140px; }
+    mat-card-title { font-size: 14px !important; font-weight: 600 !important; color: var(--text-primary) !important; letter-spacing: -0.01em !important; }
+    .info-rows { display: flex; flex-direction: column; gap: 16px; font-size: 14px; }
+    .info-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-muted); font-size: 13px; }
+    .info-value { color: var(--text-primary); font-weight: 500; font-size: 13px; }
   `]
 })
 export class Settings {

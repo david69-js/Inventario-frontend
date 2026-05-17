@@ -22,16 +22,15 @@ import { MatInputModule } from '@angular/material/input';
     <mat-card>
       <div class="table-toolbar">
         <div></div>
-        <button mat-stroked-button (click)="openNew()">
-          <mat-icon>add</mat-icon>
-          Nuevo Proveedor
+        <button mat-raised-button color="primary" (click)="openNew()">
+          <mat-icon>add</mat-icon> Nuevo Proveedor
         </button>
       </div>
 
       <table mat-table [dataSource]="suppliers">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Empresa</th>
-          <td mat-cell *matCellDef="let s">{{ s.name }}</td>
+          <td mat-cell *matCellDef="let s" style="font-weight:500">{{ s.name }}</td>
         </ng-container>
         <ng-container matColumnDef="contactName">
           <th mat-header-cell *matHeaderCellDef>Contacto</th>
@@ -39,21 +38,21 @@ import { MatInputModule } from '@angular/material/input';
         </ng-container>
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let s">{{ s.email || '—' }}</td>
+          <td mat-cell *matCellDef="let s" style="color:#666">{{ s.email || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="phone">
           <th mat-header-cell *matHeaderCellDef>Teléfono</th>
-          <td mat-cell *matCellDef="let s">{{ s.phone || '—' }}</td>
+          <td mat-cell *matCellDef="let s" style="color:#666">{{ s.phone || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="productCount">
           <th mat-header-cell *matHeaderCellDef>Productos</th>
-          <td mat-cell *matCellDef="let s">{{ s.productCount }}</td>
+          <td mat-cell *matCellDef="let s"><span class="count-badge">{{ s.productCount }}</span></td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let s" class="actions-cell">
             <button mat-icon-button (click)="openEdit(s)"><mat-icon>edit</mat-icon></button>
-            <button mat-icon-button (click)="deleteSup(s.id)"><mat-icon>delete</mat-icon></button>
+            <button mat-icon-button (click)="deleteSup(s.id)" class="del-btn"><mat-icon>delete</mat-icon></button>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
@@ -64,9 +63,7 @@ import { MatInputModule } from '@angular/material/input';
     @if (showModal) {
       <div class="modal-overlay" (click)="showModal = false">
         <mat-card class="modal-card" (click)="$event.stopPropagation()">
-          <mat-card-header>
-            <mat-card-title>{{ selected ? 'Editar' : 'Nuevo' }} Proveedor</mat-card-title>
-          </mat-card-header>
+          <mat-card-header><mat-card-title>{{ selected ? 'Editar' : 'Nuevo' }} Proveedor</mat-card-title></mat-card-header>
           <mat-card-content>
             <form (ngSubmit)="save()" class="modal-form">
               <mat-form-field><mat-label>Nombre empresa</mat-label><input matInput [(ngModel)]="form.name" name="name" required></mat-form-field>
@@ -85,11 +82,8 @@ import { MatInputModule } from '@angular/material/input';
     }
   `,
   styles: [`
-    .actions-cell { text-align: right; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
-    .modal-card { width: 100%; max-width: 440px; }
-    .modal-form { display: flex; flex-direction: column; gap: 4px; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 8px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 12px; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .del-btn:hover .mat-icon { color: var(--error) !important; }
   `]
 })
 export class Suppliers implements OnInit {

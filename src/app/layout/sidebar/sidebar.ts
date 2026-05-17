@@ -13,13 +13,17 @@ import { MatDividerModule } from '@angular/material/divider';
   template: `
     <mat-nav-list class="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo">I</div>
+        <div class="sidebar-logo">
+          <svg width="18" height="18" viewBox="0 0 76 65" fill="currentColor">
+            <path d="M37.5274 0L75.0548 65H0L37.5274 0Z"/>
+          </svg>
+        </div>
         <div>
           <div class="sidebar-title">Inventario</div>
           <div class="sidebar-subtitle">Panel de control</div>
         </div>
       </div>
-      <mat-divider />
+      <div class="sidebar-divider"></div>
       @for (item of menuItems; track item.path) {
         @if (item.roles.length === 0 || auth.hasRole(item.roles)) {
           <mat-list-item (click)="navigate(item.path)" [class.active-link]="isActive(item.path)">
@@ -28,13 +32,13 @@ import { MatDividerModule } from '@angular/material/divider';
           </mat-list-item>
         }
       }
-      <mat-divider />
+      <div class="sidebar-divider"></div>
       <mat-list-item (click)="navigate('/settings')" [class.active-link]="isActive('/settings')">
         <mat-icon matListItemIcon>settings</mat-icon>
         <span matListItemTitle>Configuración</span>
       </mat-list-item>
       <div class="sidebar-spacer"></div>
-      <mat-divider />
+      <div class="sidebar-divider"></div>
       <div class="sidebar-user">
         <div class="sidebar-avatar">{{ (auth.currentUser?.name ?? 'U')[0] }}</div>
         <div class="sidebar-user-info">
@@ -45,19 +49,154 @@ import { MatDividerModule } from '@angular/material/divider';
     </mat-nav-list>
   `,
   styles: [`
-    .sidebar { width: 256px; height: 100%; display: flex; flex-direction: column; background: var(--mat-sys-surface-container); padding-top: 0; }
-    .sidebar-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-height: 56px; }
-    .sidebar-logo { width: 32px; height: 32px; background: var(--mat-sys-primary); color: var(--mat-sys-on-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-    .sidebar-title { font-size: 14px; font-weight: 500; line-height: 1.2; }
-    .sidebar-subtitle { font-size: 11px; color: var(--mat-sys-on-surface-variant); }
+    .sidebar {
+      width: 256px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding-top: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      min-height: 56px;
+    }
+
+    .sidebar-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      color: #ffffff;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 0.2s ease;
+    }
+    .sidebar-logo:hover {
+      transform: scale(1.05);
+    }
+
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 16px;
+    }
+
     .sidebar-spacer { flex: 1; }
-    .sidebar-user { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
-    .sidebar-avatar { width: 32px; height: 32px; background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+    }
+
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-hover);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      transition: border-color 0.15s ease;
+    }
+    .sidebar-avatar:hover {
+      border-color: var(--text-muted);
+    }
+
     .sidebar-user-info { line-height: 1.2; }
-    .sidebar-user-name { font-size: 13px; font-weight: 500; }
-    .sidebar-user-role { font-size: 11px; color: var(--mat-sys-on-surface-variant); text-transform: capitalize; }
-    .active-link { background: var(--mat-sys-secondary-container); }
-    .active-link .mat-icon { color: var(--mat-sys-on-secondary-container); }
+
+    .sidebar-user-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .sidebar-user-role {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: capitalize;
+    }
+
+    /* Nav items */
+    mat-list-item {
+      --mdc-list-list-item-hover-state-layer-opacity: 0;
+      border-radius: 6px !important;
+      margin: 1px 8px !important;
+      transition: background-color 0.15s ease;
+      cursor: pointer;
+    }
+    mat-list-item:hover {
+      background-color: var(--bg-hover) !important;
+    }
+    mat-list-item .mat-icon {
+      color: var(--text-muted) !important;
+      font-size: 20px !important;
+      width: 20px !important;
+      height: 20px !important;
+      transition: color 0.15s ease;
+    }
+    mat-list-item:hover .mat-icon {
+      color: var(--text-primary) !important;
+    }
+    mat-list-item span[matListItemTitle] {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: var(--text-secondary) !important;
+      transition: color 0.15s ease;
+    }
+    mat-list-item:hover span[matListItemTitle] {
+      color: var(--text-primary) !important;
+    }
+
+    /* Active link */
+    .active-link {
+      background: var(--accent-light) !important;
+      position: relative;
+    }
+    .active-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+    }
+    .active-link .mat-icon {
+      color: var(--accent) !important;
+    }
+    .active-link span[matListItemTitle] {
+      color: var(--accent) !important;
+      font-weight: 600 !important;
+    }
   `]
 })
 export class Sidebar {

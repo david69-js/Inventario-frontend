@@ -19,77 +19,44 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
   template: `
-    <h2 mat-dialog-title>{{ data.product ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+    <h2 mat-dialog-title class="dialog-title">{{ data.product ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
     <mat-dialog-content>
       <form #productForm="ngForm" class="form-grid">
-        <mat-form-field>
-          <mat-label>Nombre</mat-label>
-          <input matInput [(ngModel)]="form.name" name="name" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>SKU</mat-label>
-          <input matInput [(ngModel)]="form.sku" name="sku" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Estado</mat-label>
+        <mat-form-field><mat-label>Nombre</mat-label><input matInput [(ngModel)]="form.name" name="name" required></mat-form-field>
+        <mat-form-field><mat-label>SKU</mat-label><input matInput [(ngModel)]="form.sku" name="sku" required></mat-form-field>
+        <mat-form-field><mat-label>Estado</mat-label>
           <mat-select [(ngModel)]="form.status" name="status">
             <mat-option value="ACTIVE">Activo</mat-option>
             <mat-option value="INACTIVE">Inactivo</mat-option>
             <mat-option value="DISCONTINUED">Descontinuado</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field>
-          <mat-label>Precio</mat-label>
-          <input matInput type="number" step="0.01" [(ngModel)]="form.price" name="price" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Stock</mat-label>
-          <input matInput type="number" [(ngModel)]="form.stock" name="stock" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Stock Mínimo</mat-label>
-          <input matInput type="number" [(ngModel)]="form.minStock" name="minStock" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Categoría</mat-label>
+        <mat-form-field><mat-label>Precio</mat-label><input matInput type="number" step="0.01" [(ngModel)]="form.price" name="price" required></mat-form-field>
+        <mat-form-field><mat-label>Stock</mat-label><input matInput type="number" [(ngModel)]="form.stock" name="stock" required></mat-form-field>
+        <mat-form-field><mat-label>Stock Mínimo</mat-label><input matInput type="number" [(ngModel)]="form.minStock" name="minStock" required></mat-form-field>
+        <mat-form-field><mat-label>Categoría</mat-label>
           <mat-select [(ngModel)]="form.categoryId" name="categoryId">
             <mat-option value="">Seleccionar...</mat-option>
-            @for (c of categories; track c.id) {
-              <mat-option [value]="c.id">{{ c.name }}</mat-option>
-            }
+            @for (c of categories; track c.id) { <mat-option [value]="c.id">{{ c.name }}</mat-option> }
           </mat-select>
         </mat-form-field>
-        <mat-form-field>
-          <mat-label>Proveedor</mat-label>
+        <mat-form-field><mat-label>Proveedor</mat-label>
           <mat-select [(ngModel)]="form.supplierId" name="supplierId">
             <mat-option value="">Seleccionar...</mat-option>
-            @for (s of suppliers; track s.id) {
-              <mat-option [value]="s.id">{{ s.name }}</mat-option>
-            }
+            @for (s of suppliers; track s.id) { <mat-option [value]="s.id">{{ s.name }}</mat-option> }
           </mat-select>
         </mat-form-field>
-        <mat-form-field class="full-width">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput [(ngModel)]="form.description" name="description" rows="2"></textarea>
-        </mat-form-field>
+        <mat-form-field class="full-width"><mat-label>Descripción</mat-label><textarea matInput [(ngModel)]="form.description" name="description" rows="2"></textarea></mat-form-field>
         <div class="full-width image-section">
           <div class="image-input-row">
-            <mat-form-field class="image-url-field">
-              <mat-label>URL de imagen</mat-label>
-              <input matInput [(ngModel)]="form.imageUrl" name="imageUrl" placeholder="https://ejemplo.com/imagen.jpg">
-            </mat-form-field>
-            <button mat-stroked-button type="button" (click)="fileInput.click()">
-              <mat-icon>upload</mat-icon>
-              Subir
-            </button>
+            <mat-form-field class="image-url-field"><mat-label>URL de imagen</mat-label><input matInput [(ngModel)]="form.imageUrl" name="imageUrl" placeholder="https://ejemplo.com/imagen.jpg"></mat-form-field>
+            <button mat-stroked-button type="button" (click)="fileInput.click()"><mat-icon>upload</mat-icon> Subir</button>
             <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
           </div>
           @if (form.imageUrl) {
             <div class="image-preview-wrapper">
               <img [src]="form.imageUrl" class="image-preview" (error)="form.imageUrl = ''">
-              <button mat-icon-button type="button" class="remove-image" (click)="form.imageUrl = ''">
-                <mat-icon>close</mat-icon>
-              </button>
+              <button mat-icon-button type="button" class="remove-image" (click)="form.imageUrl = ''"><mat-icon>close</mat-icon></button>
             </div>
           }
         </div>
@@ -101,14 +68,15 @@ import { environment } from '../../../../environments/environment';
     </mat-dialog-actions>
   `,
   styles: [`
+    .dialog-title { font-size: 18px !important; font-weight: 600 !important; letter-spacing: -0.02em; color: var(--text-primary); }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; min-width: 500px; }
     .full-width { grid-column: 1 / -1; }
     .image-section { display: flex; flex-direction: column; gap: 8px; }
     .image-input-row { display: flex; gap: 8px; align-items: center; }
     .image-url-field { flex: 1; }
-    .image-preview-wrapper { position: relative; width: 120px; border-radius: 8px; overflow: hidden; border: 1px solid var(--mat-sys-outline-variant); }
+    .image-preview-wrapper { position: relative; width: 120px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
     .image-preview { width: 120px; height: 80px; object-fit: cover; display: block; }
-    .remove-image { position: absolute; top: 2px; right: 2px; width: 24px; height: 24px; line-height: 24px; background: rgba(0,0,0,0.5); color: white; --mat-icon-button-touch-target-display: none; }
+    .remove-image { position: absolute; top: 2px; right: 2px; width: 24px; height: 24px; line-height: 24px; background: rgba(15,23,42,0.5); color: white; --mat-icon-button-touch-target-display: none; }
   `]
 })
 export class ProductModal implements OnInit {

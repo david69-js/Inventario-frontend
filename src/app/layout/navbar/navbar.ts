@@ -21,25 +21,25 @@ import { MatDividerModule } from '@angular/material/divider';
       <span class="toolbar-spacer"></span>
       <button mat-icon-button [matBadge]="(unreadCount | async) ?? 0" matBadgeSize="small"
               [matMenuTriggerFor]="notifMenu" (click)="loadNotifications()">
-        <mat-icon>notifications</mat-icon>
+        <mat-icon>notifications_none</mat-icon>
       </button>
 
       <button mat-icon-button [matMenuTriggerFor]="userMenu">
-        <mat-icon>account_circle</mat-icon>
+        <mat-icon>person_outline</mat-icon>
       </button>
 
       <mat-menu #notifMenu="matMenu" class="notif-menu">
         <div class="notif-header">
           <span class="notif-title">Notificaciones</span>
-          <button mat-button (click)="markAllRead()">Marcar leídas</button>
+          <button mat-button (click)="markAllRead()" class="mark-read-btn">Marcar leídas</button>
         </div>
         @for (n of notifications; track n.id) {
           <button mat-menu-item (click)="markRead(n)" class="notif-item">
-            <span>{{ n.title }}</span>
+            <span class="notif-item-title">{{ n.title }}</span>
             <span class="notif-date">{{ n.createdAt | date:'short' }}</span>
           </button>
         } @empty {
-          <span mat-menu-item disabled>Sin notificaciones</span>
+          <span mat-menu-item disabled class="notif-empty">Sin notificaciones</span>
         }
       </mat-menu>
 
@@ -53,7 +53,7 @@ import { MatDividerModule } from '@angular/material/divider';
           <mat-icon>settings</mat-icon>
           <span>Configuración</span>
         </button>
-        <button mat-menu-item (click)="logout()">
+        <button mat-menu-item (click)="logout()" class="logout-item">
           <mat-icon>logout</mat-icon>
           <span>Cerrar sesión</span>
         </button>
@@ -61,16 +61,109 @@ import { MatDividerModule } from '@angular/material/divider';
     </mat-toolbar>
   `,
   styles: [`
-    mat-toolbar { position: relative; z-index: 10; border-bottom: 1px solid var(--mat-sys-outline-variant); }
+    mat-toolbar {
+      position: relative;
+      z-index: 10;
+      background: var(--bg-card) !important;
+      border-bottom: 1px solid var(--border) !important;
+      box-shadow: none !important;
+    }
+
     .toolbar-spacer { flex: 1 1 auto; }
+
     .notif-menu { min-width: 360px; max-width: 400px; }
-    .notif-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--mat-sys-outline-variant); }
-    .notif-title { font-weight: 500; font-size: 14px; }
-    .notif-item { display: flex; flex-direction: column; align-items: flex-start; height: auto !important; padding: 12px 16px !important; line-height: 1.3; border-bottom: 1px solid var(--mat-sys-outline-variant); }
-    .notif-date { font-size: 11px; color: var(--mat-sys-on-surface-variant); margin-top: 2px; }
-    .user-card { pointer-events: none; padding: 12px 16px !important; }
-    .user-card-name { font-weight: 500; }
-    .user-card-email { font-size: 12px; color: var(--mat-sys-on-surface-variant); }
+
+    .notif-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .notif-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .mark-read-btn {
+      font-size: 12px !important;
+      color: var(--text-muted) !important;
+      min-height: auto !important;
+      line-height: 1 !important;
+      padding: 4px 8px !important;
+    }
+    .mark-read-btn:hover {
+      color: var(--text-primary) !important;
+    }
+
+    .notif-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: auto !important;
+      padding: 14px 20px !important;
+      line-height: 1.3;
+      border-bottom: 1px solid var(--border-light);
+      transition: background-color 0.15s ease;
+    }
+    .notif-item:hover {
+      background-color: var(--bg-hover) !important;
+    }
+
+    .notif-item-title {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .notif-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .notif-empty {
+      color: var(--text-muted) !important;
+      font-size: 13px !important;
+      text-align: center;
+    }
+
+    .user-card {
+      pointer-events: none;
+      padding: 14px 20px !important;
+    }
+
+    .user-card-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .user-card-email {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .logout-item .mat-icon {
+      color: var(--error) !important;
+    }
+    .logout-item span {
+      color: var(--error) !important;
+    }
+
+    /* Icon styling */
+    mat-toolbar .mat-mdc-icon-button {
+      color: var(--text-secondary) !important;
+      transition: color 0.15s ease;
+    }
+    mat-toolbar .mat-mdc-icon-button:hover {
+      color: var(--text-primary) !important;
+      background: var(--bg-hover) !important;
+    }
   `]
 })
 export class Navbar {

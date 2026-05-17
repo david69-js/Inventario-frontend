@@ -54,9 +54,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
             </mat-select>
           </mat-form-field>
         </div>
-        <button mat-stroked-button (click)="openNew()">
-          <mat-icon>add</mat-icon>
-          Nuevo Producto
+        <button mat-raised-button color="primary" (click)="openNew()">
+          <mat-icon>add</mat-icon> Nuevo Producto
         </button>
       </div>
 
@@ -64,14 +63,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         <ng-container matColumnDef="image">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let p">
-            @if (p.imageUrl) {
-              <img [src]="p.imageUrl" class="thumb" (error)="p.imageUrl = undefined">
-            }
+            @if (p.imageUrl) { <img [src]="p.imageUrl" class="thumb" (error)="p.imageUrl = undefined"> }
           </td>
         </ng-container>
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Producto</th>
-          <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+          <td mat-cell *matCellDef="let p" style="font-weight:500">{{ p.name }}</td>
         </ng-container>
         <ng-container matColumnDef="sku">
           <th mat-header-cell *matHeaderCellDef>SKU</th>
@@ -95,16 +92,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let p">
-            <mat-chip [color]="p.status === 'ACTIVE' ? 'primary' : p.status === 'INACTIVE' ? '' : 'warn'" highlighted>
+            <span class="badge" [class]="p.status === 'ACTIVE' ? 'badge badge-success' : p.status === 'INACTIVE' ? 'badge badge-neutral' : 'badge badge-error'">
               {{ p.status === 'ACTIVE' ? 'Activo' : p.status === 'INACTIVE' ? 'Inactivo' : 'Descont.' }}
-            </mat-chip>
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let p" class="actions-cell">
             <button mat-icon-button (click)="openEdit(p)" matTooltip="Editar"><mat-icon>edit</mat-icon></button>
-            <button mat-icon-button (click)="deleteProduct(p.id)" matTooltip="Eliminar"><mat-icon>delete</mat-icon></button>
+            <button mat-icon-button (click)="deleteProduct(p.id)" matTooltip="Eliminar" class="del-btn"><mat-icon>delete</mat-icon></button>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
@@ -113,11 +110,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     </mat-card>
   `,
   styles: [`
-    .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; display: block; border: 1px solid var(--mat-sys-outline-variant); }
-    .actions-cell { text-align: right; }
-    .warn-text { color: var(--mat-sys-error); font-weight: 500; }
-    .muted { color: var(--mat-sys-on-surface-variant); font-size: 12px; margin-left: 4px; }
-    code { font-family: 'Roboto Mono', monospace; font-size: 12px; }
+    .thumb { width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover; display: block; border: 1px solid var(--border); }
+    .warn-text { color: var(--error); font-weight: 600; }
+    .muted { color: var(--text-muted); font-size: 12px; margin-left: 4px; }
+    .del-btn:hover .mat-icon { color: var(--error) !important; }
   `]
 })
 export class Products implements OnInit {
@@ -129,11 +125,7 @@ export class Products implements OnInit {
   filterStatus = '';
   columns = ['image', 'name', 'sku', 'stock', 'price', 'category', 'status', 'actions'];
 
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private dialog: MatDialog
-  ) {}
+  constructor(private productService: ProductService, private categoryService: CategoryService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.productService.getAll().subscribe((p: Product[]) => { this.products = p; this.applyFilters(); });
@@ -142,10 +134,7 @@ export class Products implements OnInit {
 
   applyFilters() {
     let result = [...this.products];
-    if (this.search) {
-      const s = this.search.toLowerCase();
-      result = result.filter(p => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s));
-    }
+    if (this.search) { const s = this.search.toLowerCase(); result = result.filter(p => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s)); }
     if (this.filterCategory) result = result.filter(p => p.categoryId === this.filterCategory);
     if (this.filterStatus) result = result.filter(p => p.status === this.filterStatus);
     this.filteredProducts = result;
@@ -161,7 +150,5 @@ export class Products implements OnInit {
     ref.afterClosed().subscribe(data => { if (data) this.productService.update(p.id, data).subscribe(() => this.ngOnInit()); });
   }
 
-  deleteProduct(id: string) {
-    if (confirm('¿Eliminar este producto?')) this.productService.delete(id).subscribe(() => this.ngOnInit());
-  }
+  deleteProduct(id: string) { if (confirm('¿Eliminar este producto?')) this.productService.delete(id).subscribe(() => this.ngOnInit()); }
 }

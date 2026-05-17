@@ -25,31 +25,31 @@ import { MatButtonModule } from '@angular/material/button';
           <td mat-cell *matCellDef="let u">
             <div class="user-cell">
               <div class="avatar">{{ u.name.charAt(0) }}</div>
-              <span>{{ u.name }}</span>
+              <span style="font-weight:500">{{ u.name }}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+          <td mat-cell *matCellDef="let u" style="color:#666">{{ u.email }}</td>
         </ng-container>
         <ng-container matColumnDef="role">
           <th mat-header-cell *matHeaderCellDef>Rol</th>
           <td mat-cell *matCellDef="let u">
-            <mat-chip [color]="u.role === 'ADMIN' ? 'primary' : u.role === 'INVENTORY_MANAGER' ? 'accent' : ''" highlighted>
+            <span class="badge" [class]="u.role === 'ADMIN' ? 'badge badge-dark' : u.role === 'INVENTORY_MANAGER' ? 'badge badge-info' : 'badge badge-neutral'">
               {{ u.role === 'INVENTORY_MANAGER' ? 'Manager' : u.role === 'ADMIN' ? 'Admin' : 'Empleado' }}
-            </mat-chip>
+            </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let u">
-            <mat-chip [color]="u.isActive ? 'primary' : ''" highlighted>{{ u.isActive ? 'Activo' : 'Inactivo' }}</mat-chip>
+            <span class="badge" [class]="u.isActive ? 'badge badge-success' : 'badge badge-neutral'">{{ u.isActive ? 'Activo' : 'Inactivo' }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="createdAt">
           <th mat-header-cell *matHeaderCellDef>Creado</th>
-          <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
+          <td mat-cell *matCellDef="let u" style="color:#999">{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
@@ -63,9 +63,8 @@ import { MatButtonModule } from '@angular/material/button';
     </mat-card>
   `,
   styles: [`
-    .user-cell { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 32px; height: 32px; background: var(--mat-sys-surface-container-high); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--mat-sys-on-surface-variant); }
-    .actions-cell { text-align: right; }
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 32px; height: 32px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
   `]
 })
 export class Users implements OnInit {
