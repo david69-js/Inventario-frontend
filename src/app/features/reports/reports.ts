@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReportService, LowStockItem, InventoryValueReport } from '../../core/services/report.service';
 import { DashboardData } from '../../core/models/dashboard.model';
 import { CurrencyPipe } from '@angular/common';
@@ -143,19 +143,21 @@ export class Reports implements OnInit {
   maxValue = 1;
   lowStockColumns = ['name', 'sku', 'category', 'stock', 'minStock', 'deficit', 'status'];
 
-  constructor(private reportService: ReportService) {}
+  constructor(private reportService: ReportService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.reportService.getDashboard().subscribe(d => this.data = d);
-    this.reportService.getLowStock().subscribe(items => this.lowStockItems = items);
+    this.reportService.getDashboard().subscribe(d => { this.data = d; this.cdr.detectChanges(); });
+    this.reportService.getLowStock().subscribe(items => { this.lowStockItems = items; this.cdr.detectChanges(); });
     this.reportService.getMonthlyMovements().subscribe(movements => {
       this.monthlyMovements = movements;
       this.maxIncoming = Math.max(1, ...movements.map(m => m.incoming));
       this.maxOutgoing = Math.max(1, ...movements.map(m => m.outgoing));
+      this.cdr.detectChanges();
     });
     this.reportService.getInventoryValue().subscribe(report => {
       this.inventoryValue = report;
       this.maxValue = Math.max(1, ...report.byCategory.map(c => c.value));
+      this.cdr.detectChanges();
     });
   }
 }

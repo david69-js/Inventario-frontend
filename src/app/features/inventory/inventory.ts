@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InventoryMovement, MovementType } from '../../core/models/inventory-movement.model';
 import { Product } from '../../core/models/product.model';
@@ -132,11 +132,18 @@ export class Inventory implements OnInit {
   formDescription = '';
   columns = ['createdAt', 'productName', 'type', 'quantity', 'userName', 'description'];
 
-  constructor(private inventoryService: InventoryService, private productService: ProductService, private auth: AuthService) {}
+  constructor(private inventoryService: InventoryService, private productService: ProductService, private auth: AuthService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.inventoryService.getAll().subscribe((m: InventoryMovement[]) => { this.movements = m; this.applyFilters(); });
-    this.productService.getAll().subscribe((p: Product[]) => this.products = p);
+    this.inventoryService.getAll().subscribe((m: InventoryMovement[]) => { 
+      this.movements = m; 
+      this.applyFilters(); 
+      this.cdr.detectChanges();
+    });
+    this.productService.getAll().subscribe((p: Product[]) => {
+      this.products = p;
+      this.cdr.detectChanges();
+    });
   }
 
   applyFilters() {

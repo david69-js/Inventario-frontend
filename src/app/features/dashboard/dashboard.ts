@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReportService } from '../../core/services/report.service';
 import { DashboardData } from '../../core/models/dashboard.model';
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -336,12 +336,13 @@ export class Dashboard implements OnInit {
   maxCategoryCount = 1;
   activityColumns = ['product', 'type', 'quantity', 'user', 'date'];
 
-  constructor(private reportService: ReportService) {}
+  constructor(private reportService: ReportService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.reportService.getDashboard().subscribe(d => {
       this.data = d;
       this.maxCategoryCount = Math.max(...d.productsByCategory.map(c => c.count), 1);
+      this.cdr.detectChanges();
     });
   }
 

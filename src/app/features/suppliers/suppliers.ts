@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Supplier } from '../../core/models/supplier.model';
 import { SupplierService } from '../../core/services/supplier.service';
@@ -93,9 +93,9 @@ export class Suppliers implements OnInit {
   selected: Supplier | null = null;
   form: Partial<Supplier> = {};
 
-  constructor(private service: SupplierService) {}
+  constructor(private service: SupplierService, private cdr: ChangeDetectorRef) {}
 
-  ngOnInit() { this.service.getAll().subscribe((s: Supplier[]) => this.suppliers = s); }
+  ngOnInit() { this.service.getAll().subscribe((s: Supplier[]) => { this.suppliers = s; this.cdr.detectChanges(); }); }
 
   openNew() { this.selected = null; this.form = { name: '', contactName: '', email: '', phone: '', address: '' }; this.showModal = true; }
 

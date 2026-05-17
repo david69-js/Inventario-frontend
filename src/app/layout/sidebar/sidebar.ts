@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Role } from '../../core/models/user.model';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -9,7 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [MatListModule, MatIconModule, MatDividerModule],
+  imports: [RouterLink, RouterLinkActive, MatListModule, MatIconModule, MatDividerModule],
   template: `
     <mat-nav-list class="sidebar">
       <div class="sidebar-header">
@@ -26,14 +27,14 @@ import { MatDividerModule } from '@angular/material/divider';
       <div class="sidebar-divider"></div>
       @for (item of menuItems; track item.path) {
         @if (item.roles.length === 0 || auth.hasRole(item.roles)) {
-          <mat-list-item (click)="navigate(item.path)" [class.active-link]="isActive(item.path)">
+          <mat-list-item [routerLink]="item.path" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: item.path === '/dashboard'}">
             <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
             <span matListItemTitle>{{ item.label }}</span>
           </mat-list-item>
         }
       }
       <div class="sidebar-divider"></div>
-      <mat-list-item (click)="navigate('/settings')" [class.active-link]="isActive('/settings')">
+      <mat-list-item routerLink="/settings" routerLinkActive="active-link">
         <mat-icon matListItemIcon>settings</mat-icon>
         <span matListItemTitle>Configuración</span>
       </mat-list-item>
@@ -210,11 +211,5 @@ export class Sidebar {
     { path: '/users', label: 'Usuarios', icon: 'people', roles: [Role.ADMIN] },
   ];
 
-  constructor(public auth: AuthService, private router: Router) {}
-
-  navigate(path: string) { this.router.navigate([path]); }
-
-  isActive(path: string): boolean {
-    return this.router.isActive(path, { paths: 'exact', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored' });
-  }
+  constructor(public auth: AuthService) {}
 }

@@ -48,12 +48,12 @@ export class ReportService {
         totalProducts: res.totalProducts ?? 0,
         lowStockProducts: res.lowStockProducts ?? 0,
         inventoryValue: Number(res.inventoryValue ?? 0),
-        monthlyMovements: res.monthlyMovements ?? 0,
-        movementsByMonth: res.monthlyMovements ?? [],
-        productsByCategory: (res.productsByCategory || []).map((c: any) => ({
+        monthlyMovements: typeof res.monthlyMovements === 'number' ? res.monthlyMovements : 0,
+        movementsByMonth: Array.isArray(res.movementsByMonth) ? res.movementsByMonth : [],
+        productsByCategory: Array.isArray(res.productsByCategory) ? res.productsByCategory.map((c: any) => ({
           category: c.categoryId || '',
           count: c._count || 0,
-        })),
+        })) : [],
         inventoryValueOverTime: [],
         recentActivity: (res.recentActivity || []).map((a: any) => ({
           id: a.id,

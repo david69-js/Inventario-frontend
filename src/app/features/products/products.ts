@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Product, ProductStatus } from '../../core/models/product.model';
 import { Category } from '../../core/models/category.model';
@@ -125,11 +125,18 @@ export class Products implements OnInit {
   filterStatus = '';
   columns = ['image', 'name', 'sku', 'stock', 'price', 'category', 'status', 'actions'];
 
-  constructor(private productService: ProductService, private categoryService: CategoryService, private dialog: MatDialog) {}
+  constructor(private productService: ProductService, private categoryService: CategoryService, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.productService.getAll().subscribe((p: Product[]) => { this.products = p; this.applyFilters(); });
-    this.categoryService.getAll().subscribe((c: Category[]) => this.categories = c);
+    this.productService.getAll().subscribe((p: Product[]) => { 
+      this.products = p; 
+      this.applyFilters(); 
+      this.cdr.detectChanges(); 
+    });
+    this.categoryService.getAll().subscribe((c: Category[]) => {
+      this.categories = c;
+      this.cdr.detectChanges();
+    });
   }
 
   applyFilters() {

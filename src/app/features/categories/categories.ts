@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Category } from '../../core/models/category.model';
 import { CategoryService } from '../../core/services/category.service';
@@ -87,9 +87,9 @@ export class Categories implements OnInit {
   selected: Category | null = null;
   form: Partial<Category> = {};
 
-  constructor(private service: CategoryService) {}
+  constructor(private service: CategoryService, private cdr: ChangeDetectorRef) {}
 
-  ngOnInit() { this.service.getAll().subscribe(c => this.categories = c); }
+  ngOnInit() { this.service.getAll().subscribe(c => { this.categories = c; this.cdr.detectChanges(); }); }
 
   openNew() { this.selected = null; this.form = { name: '', description: '' }; this.showModal = true; }
 

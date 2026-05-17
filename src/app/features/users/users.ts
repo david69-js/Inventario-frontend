@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { User } from '../../core/models/user.model';
 import { UserService } from '../../core/services/user.service';
 import { DatePipe } from '@angular/common';
@@ -71,7 +71,7 @@ export class Users implements OnInit {
   users: User[] = [];
   columns = ['name', 'email', 'role', 'status', 'createdAt', 'actions'];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
 
-  ngOnInit() { this.userService.getAll().subscribe(u => this.users = u); }
+  ngOnInit() { this.userService.getAll().subscribe(u => { this.users = u; this.cdr.detectChanges(); }); }
 }
