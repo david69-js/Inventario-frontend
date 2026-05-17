@@ -1,12 +1,12 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build
 
 FROM nginx:1.25-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/dist/inventario-front /usr/share/nginx/html
+COPY --from=builder /app/dist/inventario-front/browser /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
