@@ -2,72 +2,77 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../../core/models/user.model';
 import { UserService } from '../../core/services/user.service';
 import { DatePipe } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, MatTableModule, MatCardModule, MatChipsModule, MatIconModule, MatButtonModule],
   template: `
-    <div class="space-y-6">
-      <div>
-        <h1 class="text-lg font-semibold text-foreground">Usuarios</h1>
-        <p class="text-sm text-muted-foreground mt-1">Gestión de usuarios del sistema</p>
-      </div>
-
-      <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="text-left text-xs text-muted-foreground border-b border-border">
-              <th class="px-4 py-3.5 font-medium">Usuario</th>
-              <th class="px-4 py-3.5 font-medium">Email</th>
-              <th class="px-4 py-3.5 font-medium">Rol</th>
-              <th class="px-4 py-3.5 font-medium">Estado</th>
-              <th class="px-4 py-3.5 font-medium">Creado</th>
-              <th class="px-4 py-3.5 font-medium text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (u of users; track u.id) {
-              <tr class="border-b border-border/50 hover:bg-accent transition-colors">
-                <td class="px-4 py-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-muted-foreground text-xs font-medium">
-                      {{ u.name.charAt(0) }}
-                    </div>
-                    <span class="font-medium text-foreground">{{ u.name }}</span>
-                  </div>
-                </td>
-                <td class="px-4 py-3 text-muted-foreground">{{ u.email }}</td>
-                <td class="px-4 py-3">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium"
-                        [class]="u.role === 'ADMIN' ? 'bg-purple-50 text-purple-700' : u.role === 'INVENTORY_MANAGER' ? 'bg-blue-50 text-blue-700' : 'bg-muted text-muted-foreground'">
-                    {{ u.role === 'INVENTORY_MANAGER' ? 'Manager' : u.role === 'ADMIN' ? 'Admin' : 'Empleado' }}
-                  </span>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="inline-flex items-center gap-1.5 text-xs" [class]="u.isActive ? 'text-emerald-600' : 'text-red-500'">
-                    <span class="w-1.5 h-1.5 rounded-full" [class]="u.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
-                    {{ u.isActive ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-muted-foreground/60 text-xs">{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
-                <td class="px-4 py-3 text-right">
-                  <button class="text-sm text-muted-foreground hover:text-foreground font-medium transition-colors">Editar</button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+    <div class="page-header">
+      <h1>Usuarios</h1>
+      <p>Gestión de usuarios del sistema</p>
     </div>
+
+    <mat-card>
+      <table mat-table [dataSource]="users">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Usuario</th>
+          <td mat-cell *matCellDef="let u">
+            <div class="user-cell">
+              <div class="avatar">{{ u.name.charAt(0) }}</div>
+              <span>{{ u.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+        </ng-container>
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Rol</th>
+          <td mat-cell *matCellDef="let u">
+            <mat-chip [color]="u.role === 'ADMIN' ? 'primary' : u.role === 'INVENTORY_MANAGER' ? 'accent' : ''" highlighted>
+              {{ u.role === 'INVENTORY_MANAGER' ? 'Manager' : u.role === 'ADMIN' ? 'Admin' : 'Empleado' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let u">
+            <mat-chip [color]="u.isActive ? 'primary' : ''" highlighted>{{ u.isActive ? 'Activo' : 'Inactivo' }}</mat-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Creado</th>
+          <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let u" class="actions-cell">
+            <button mat-icon-button matTooltip="Editar"><mat-icon>edit</mat-icon></button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+      </table>
+    </mat-card>
   `,
+  styles: [`
+    .user-cell { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 32px; height: 32px; background: var(--mat-sys-surface-container-high); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--mat-sys-on-surface-variant); }
+    .actions-cell { text-align: right; }
+  `]
 })
 export class Users implements OnInit {
   users: User[] = [];
+  columns = ['name', 'email', 'role', 'status', 'createdAt', 'actions'];
 
   constructor(private userService: UserService) {}
 
-  ngOnInit() {
-    this.userService.getAll().subscribe(u => this.users = u);
-  }
+  ngOnInit() { this.userService.getAll().subscribe(u => this.users = u); }
 }

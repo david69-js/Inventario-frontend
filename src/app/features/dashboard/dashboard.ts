@@ -2,161 +2,173 @@ import { Component, OnInit } from '@angular/core';
 import { ReportService } from '../../core/services/report.service';
 import { DashboardData } from '../../core/models/dashboard.model';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, MatCardModule, MatTableModule, MatIconModule, MatChipsModule],
   template: `
-    <div class="space-y-8">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-xl font-semibold text-foreground">Dashboard</h1>
-          <p class="text-sm text-muted-foreground mt-1">Resumen general del inventario</p>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-muted-foreground bg-card px-3 py-1.5 rounded-lg border border-border shadow-sm">
-          <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-          <span>Actualizado en tiempo real</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow duration-200 p-5">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Productos</span>
-            <div class="w-9 h-9 bg-muted rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-muted-foreground"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            </div>
-          </div>
-          <p class="text-2xl font-bold text-foreground">{{ data?.totalProducts }}</p>
-          <p class="text-xs text-muted-foreground/60 mt-1">Productos registrados</p>
-        </div>
-
-        <div class="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow duration-200 p-5">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Stock Bajo</span>
-            <div class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-amber-600"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            </div>
-          </div>
-          <p class="text-2xl font-bold text-foreground">{{ data?.lowStockProducts }}</p>
-          <p class="text-xs text-muted-foreground/60 mt-1">Requieren reposición</p>
-        </div>
-
-        <div class="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow duration-200 p-5">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Valor Inventario</span>
-            <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-blue-600"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-          </div>
-          <p class="text-2xl font-bold text-foreground">{{ data?.inventoryValue | currency }}</p>
-          <p class="text-xs text-muted-foreground/60 mt-1">Valor total en stock</p>
-        </div>
-
-        <div class="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow duration-200 p-5">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Mov. del Mes</span>
-            <div class="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-emerald-600"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </div>
-          </div>
-          <p class="text-2xl font-bold text-foreground">{{ data?.monthlyMovements }}</p>
-          <p class="text-xs text-muted-foreground/60 mt-1">Movimientos registrados</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div class="lg:col-span-2 bg-card rounded-xl border border-border shadow-sm p-5">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-sm font-semibold text-foreground">Movimientos Mensuales</h3>
-            <div class="flex gap-4 text-xs text-muted-foreground">
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-foreground rounded-sm"></span> Entradas</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-muted-foreground rounded-sm"></span> Salidas</span>
-            </div>
-          </div>
-          <div class="flex items-end gap-2 h-48">
-            @for (m of data?.movementsByMonth; track m.month) {
-              <div class="flex-1 flex flex-col items-center gap-1.5">
-                <div class="w-full flex gap-0.5 rounded-sm overflow-hidden" style="height: 140px;">
-                  <div class="flex-1 bg-foreground rounded-sm transition-all duration-300 hover:opacity-80"
-                       [style.height.%]="(m.incoming / getMaxMovement()) * 100"></div>
-                  <div class="flex-1 bg-muted-foreground rounded-sm transition-all duration-300 hover:opacity-80"
-                       [style.height.%]="(m.outgoing / getMaxMovement()) * 100"></div>
-                </div>
-                <span class="text-[11px] text-muted-foreground font-medium">{{ m.month }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <div class="bg-card rounded-xl border border-border shadow-sm p-5">
-          <h3 class="text-sm font-semibold text-foreground mb-5">Productos por Categoría</h3>
-          <div class="space-y-4">
-            @for (c of data?.productsByCategory; track c.category) {
-              <div>
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-sm text-muted-foreground">{{ c.category }}</span>
-                  <span class="text-sm font-medium text-foreground">{{ c.count }}</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-foreground rounded-full transition-all duration-500"
-                       [style.width.%]="(c.count / maxCategoryCount) * 100"></div>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-card rounded-xl border border-border shadow-sm p-5">
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="text-sm font-semibold text-foreground">Actividad Reciente</h3>
-          <span class="text-xs text-muted-foreground/60">Últimos movimientos</span>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="text-left text-xs text-muted-foreground border-b border-border">
-                <th class="pb-3.5 pr-6 font-medium">Producto</th>
-                <th class="pb-3.5 pr-6 font-medium">Tipo</th>
-                <th class="pb-3.5 pr-6 font-medium">Cantidad</th>
-                <th class="pb-3.5 pr-6 font-medium">Usuario</th>
-                <th class="pb-3.5 font-medium">Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (a of data?.recentActivity; track a.id) {
-                <tr class="border-b border-border/50 hover:bg-accent transition-colors">
-                  <td class="py-3.5 pr-6 text-foreground font-medium">{{ a.productName }}</td>
-                  <td class="py-3.5 pr-6">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium"
-                          [class]="a.type === 'INCOMING' ? 'bg-emerald-50 text-emerald-700' : a.type === 'OUTGOING' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'">
-                      {{ a.type === 'INCOMING' ? 'Entrada' : a.type === 'OUTGOING' ? 'Salida' : 'Ajuste' }}
-                    </span>
-                  </td>
-                  <td class="py-3.5 pr-6 text-foreground font-semibold">{{ a.quantity }}</td>
-                  <td class="py-3.5 pr-6 text-muted-foreground">{{ a.userName }}</td>
-                  <td class="py-3.5 text-muted-foreground/60 text-xs">{{ a.date | date:'dd/MM/yyyy HH:mm' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <p>Resumen general del inventario</p>
     </div>
+
+    <div class="stats-grid">
+      <mat-card>
+        <mat-card-content class="stat-card">
+          <div class="stat-label">Total Productos</div>
+          <div class="stat-value">{{ data?.totalProducts }}</div>
+          <div class="stat-desc">Productos registrados</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-content class="stat-card">
+          <div class="stat-label">Stock Bajo</div>
+          <div class="stat-value" style="color: var(--mat-sys-error)">{{ data?.lowStockProducts }}</div>
+          <div class="stat-desc">Requieren reposición</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-content class="stat-card">
+          <div class="stat-label">Valor Inventario</div>
+          <div class="stat-value">{{ data?.inventoryValue | currency }}</div>
+          <div class="stat-desc">Valor total en stock</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-content class="stat-card">
+          <div class="stat-label">Mov. del Mes</div>
+          <div class="stat-value">{{ data?.monthlyMovements }}</div>
+          <div class="stat-desc">Movimientos registrados</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Movimientos Mensuales</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="bar-chart">
+            @for (m of data?.movementsByMonth || []; track m.month) {
+              <div class="bar-group">
+                <div class="bar bars">
+                  <div class="bar-incoming" [style.height.%]="(m.incoming / getMaxMovement()) * 100"></div>
+                  <div class="bar-outgoing" [style.height.%]="(m.outgoing / getMaxMovement()) * 100"></div>
+                </div>
+                <span class="bar-label">{{ m.month }}</span>
+              </div>
+            }
+          </div>
+          <div class="bar-legend">
+            <span><span class="legend-dot incoming"></span> Entradas</span>
+            <span><span class="legend-dot outgoing"></span> Salidas</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Productos por Categoría</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="category-list">
+            @for (c of data?.productsByCategory || []; track c.category) {
+              <div class="category-row">
+              <div class="category-info">
+                <span class="category-name">{{ c.category }}</span>
+                <span class="category-count">{{ c.count }}</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="(c.count / maxCategoryCount) * 100"></div>
+              </div>
+            </div>
+          }
+        </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Actividad Reciente</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="data?.recentActivity || []" class="full-width">
+          <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef>Producto</th>
+            <td mat-cell *matCellDef="let a">{{ a.productName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let a">
+              <mat-chip [color]="a.type === 'INCOMING' ? 'primary' : a.type === 'OUTGOING' ? 'warn' : 'accent'" highlighted>
+                {{ a.type === 'INCOMING' ? 'Entrada' : a.type === 'OUTGOING' ? 'Salida' : 'Ajuste' }}
+              </mat-chip>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+            <td mat-cell *matCellDef="let a"><strong>{{ a.quantity }}</strong></td>
+          </ng-container>
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>Usuario</th>
+            <td mat-cell *matCellDef="let a">{{ a.userName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let a">{{ a.date | date:'dd/MM/yyyy HH:mm' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="activityColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: activityColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
   `,
+  styles: [`
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
+    .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .chart-card { }
+    mat-card { margin-bottom: 24px; }
+    mat-card:last-child { margin-bottom: 0; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 160px; padding-top: 20px; }
+    .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bars { width: 100%; display: flex; gap: 2px; height: 140px; align-items: flex-end; }
+    .bar-incoming { flex: 1; background: var(--mat-sys-primary); border-radius: 2px 2px 0 0; transition: height 0.3s; min-height: 2px; }
+    .bar-outgoing { flex: 1; background: var(--mat-sys-primary-container); border-radius: 2px 2px 0 0; transition: height 0.3s; min-height: 2px; }
+    .bar-label { font-size: 11px; color: var(--mat-sys-on-surface-variant); }
+    .bar-legend { display: flex; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--mat-sys-on-surface-variant); }
+    .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+    .legend-dot.incoming { background: var(--mat-sys-primary); }
+    .legend-dot.outgoing { background: var(--mat-sys-primary-container); }
+    .category-list { display: flex; flex-direction: column; gap: 16px; }
+    .category-row { }
+    .category-info { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .category-name { font-size: 13px; }
+    .category-count { font-weight: 500; font-size: 13px; }
+    .progress-bar { height: 8px; background: var(--mat-sys-surface-container-high); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--mat-sys-primary); border-radius: 4px; transition: width 0.4s; }
+  `]
 })
 export class Dashboard implements OnInit {
   data?: DashboardData;
   maxCategoryCount = 1;
+  activityColumns = ['product', 'type', 'quantity', 'user', 'date'];
 
   constructor(private reportService: ReportService) {}
 
   ngOnInit() {
     this.reportService.getDashboard().subscribe(d => {
       this.data = d;
-      this.maxCategoryCount = Math.max(...d.productsByCategory.map(c => c.count));
+      this.maxCategoryCount = Math.max(...d.productsByCategory.map(c => c.count), 1);
     });
   }
 

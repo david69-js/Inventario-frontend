@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const postcss = require('postcss');
-const tailwindcss = require('@tailwindcss/postcss');
 
 const envPath = path.join(__dirname, '.env');
 const outputPath = path.join(__dirname, 'src', 'environments', 'environment.ts');
@@ -26,17 +24,3 @@ const output = `export const environment = {
 
 fs.writeFileSync(outputPath, output);
 console.log(`Environment generated: API_URL = ${apiUrl}`);
-
-// Process CSS with Tailwind v4
-const cssPath = path.join(__dirname, 'src', 'styles.css');
-const css = fs.readFileSync(cssPath, 'utf-8');
-
-postcss([tailwindcss()])
-  .process(css, { from: cssPath, to: cssPath })
-  .then(result => {
-    fs.writeFileSync(cssPath, result.css);
-    console.log('Tailwind CSS processed successfully');
-  })
-  .catch(err => {
-    console.error('Tailwind CSS processing failed:', err);
-  });
