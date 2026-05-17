@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { Role } from '../../core/models/user.model';
 import { MatListModule } from '@angular/material/list';
@@ -9,7 +9,7 @@ import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, MatListModule, MatIconModule, MatDividerModule],
+  imports: [MatListModule, MatIconModule, MatDividerModule],
   template: `
     <mat-nav-list class="sidebar">
       <div class="sidebar-header">

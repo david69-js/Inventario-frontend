@@ -61,6 +61,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       </div>
 
       <table mat-table [dataSource]="filteredProducts">
+        <ng-container matColumnDef="image">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let p">
+            @if (p.imageUrl) {
+              <img [src]="p.imageUrl" class="thumb" (error)="p.imageUrl = undefined">
+            }
+          </td>
+        </ng-container>
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Producto</th>
           <td mat-cell *matCellDef="let p">{{ p.name }}</td>
@@ -105,6 +113,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     </mat-card>
   `,
   styles: [`
+    .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; display: block; border: 1px solid var(--mat-sys-outline-variant); }
     .actions-cell { text-align: right; }
     .warn-text { color: var(--mat-sys-error); font-weight: 500; }
     .muted { color: var(--mat-sys-on-surface-variant); font-size: 12px; margin-left: 4px; }
@@ -118,7 +127,7 @@ export class Products implements OnInit {
   search = '';
   filterCategory = '';
   filterStatus = '';
-  columns = ['name', 'sku', 'stock', 'price', 'category', 'status', 'actions'];
+  columns = ['image', 'name', 'sku', 'stock', 'price', 'category', 'status', 'actions'];
 
   constructor(
     private productService: ProductService,

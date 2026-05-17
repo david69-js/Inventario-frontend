@@ -1,20 +1,23 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Product, ProductStatus } from '../../../core/models/product.model';
 import { Category } from '../../../core/models/category.model';
 import { Supplier } from '../../../core/models/supplier.model';
 import { CategoryService } from '../../../core/services/category.service';
 import { SupplierService } from '../../../core/services/supplier.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-modal',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
+  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule],
   template: `
     <h2 mat-dialog-title>{{ data.product ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
     <mat-dialog-content>
@@ -67,8 +70,29 @@ import { SupplierService } from '../../../core/services/supplier.service';
         </mat-form-field>
         <mat-form-field class="full-width">
           <mat-label>Descripción</mat-label>
-          <textarea matInput [(ngModel)]="form.description" name="description" rows="3"></textarea>
+          <textarea matInput [(ngModel)]="form.description" name="description" rows="2"></textarea>
         </mat-form-field>
+        <div class="full-width image-section">
+          <div class="image-input-row">
+            <mat-form-field class="image-url-field">
+              <mat-label>URL de imagen</mat-label>
+              <input matInput [(ngModel)]="form.imageUrl" name="imageUrl" placeholder="https://ejemplo.com/imagen.jpg">
+            </mat-form-field>
+            <button mat-stroked-button type="button" (click)="fileInput.click()">
+              <mat-icon>upload</mat-icon>
+              Subir
+            </button>
+            <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+          </div>
+          @if (form.imageUrl) {
+            <div class="image-preview-wrapper">
+              <img [src]="form.imageUrl" class="image-preview" (error)="form.imageUrl = ''">
+              <button mat-icon-button type="button" class="remove-image" (click)="form.imageUrl = ''">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -77,20 +101,28 @@ import { SupplierService } from '../../../core/services/supplier.service';
     </mat-dialog-actions>
   `,
   styles: [`
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; min-width: 480px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; min-width: 500px; }
     .full-width { grid-column: 1 / -1; }
+    .image-section { display: flex; flex-direction: column; gap: 8px; }
+    .image-input-row { display: flex; gap: 8px; align-items: center; }
+    .image-url-field { flex: 1; }
+    .image-preview-wrapper { position: relative; width: 120px; border-radius: 8px; overflow: hidden; border: 1px solid var(--mat-sys-outline-variant); }
+    .image-preview { width: 120px; height: 80px; object-fit: cover; display: block; }
+    .remove-image { position: absolute; top: 2px; right: 2px; width: 24px; height: 24px; line-height: 24px; background: rgba(0,0,0,0.5); color: white; --mat-icon-button-touch-target-display: none; }
   `]
 })
 export class ProductModal implements OnInit {
   form: Partial<Product> = {};
   categories: Category[] = [];
   suppliers: Supplier[] = [];
+  uploading = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { product: Product | null },
     private dialogRef: MatDialogRef<ProductModal>,
     private catService: CategoryService,
-    private supService: SupplierService
+    private supService: SupplierService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -98,8 +130,22 @@ export class ProductModal implements OnInit {
     this.supService.getAll().subscribe((s: Supplier[]) => this.suppliers = s);
     this.form = this.data.product ? { ...this.data.product } : {
       name: '', sku: '', price: 0, stock: 0, minStock: 0,
-      status: ProductStatus.ACTIVE, categoryId: '', supplierId: '', description: '',
+      status: ProductStatus.ACTIVE, categoryId: '', supplierId: '', description: '', imageUrl: '',
     };
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const file = input.files[0];
+    this.uploading = true;
+    const fd = new FormData();
+    fd.append('file', file);
+    const baseUrl = environment.apiUrl.replace(/\/api$/, '');
+    this.http.post<{ url: string }>(`${baseUrl}/api/upload`, fd).subscribe({
+      next: (res) => { this.form.imageUrl = baseUrl + res.url; this.uploading = false; },
+      error: () => { alert('Error al subir la imagen'); this.uploading = false; },
+    });
   }
 
   save() { this.dialogRef.close(this.form); }
